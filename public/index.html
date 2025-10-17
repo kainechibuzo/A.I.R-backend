@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIR Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Reset & base */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(135deg, #f5faff, #e6f4ff);
+  color: #0c2340;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.background-slogan {
+  position: absolute;
+  font-size: 4rem;
+  color: rgba(0,123,189,0.05);
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Card container */
+.login-container {
+  position: relative;
+  width: 900px;
+  max-width: 95%;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  z-index: 1;
+}
+
+/* Email & password */
+.login-container input {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 12px;
+  border: 1px solid #c3e0ff;
+  font-size: 1rem;
+  outline: none;
+  transition: 0.3s;
+}
+.login-container input:focus {
+  border-color: #007bbd;
+  box-shadow: 0 0 8px rgba(0,123,189,0.2);
+}
+
+/* Plan cards */
+.plan-cards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.plan-card {
+  flex: 1;
+  min-width: 250px;
+  background: #e6f4ff;
+  border-radius: 20px;
+  padding: 20px;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+  border: 2px solid transparent;
+}
+.plan-card.selected {
+  border-color: #007bbd;
+  box-shadow: 0 10px 20px rgba(0,123,189,0.2);
+  transform: translateY(-5px);
+}
+.plan-card h3 {
+  margin-top: 0;
+  color: #007bbd;
+}
+.plan-card p {
+  margin: 5px 0;
+  font-size: 0.95rem;
+}
+
+/* Login button */
+.login-container button {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(90deg, #00c0ff, #007bbd);
+  cursor: pointer;
+  transition: 0.3s;
+}
+.login-container button:hover {
+  background: linear-gradient(90deg, #007bbd, #00a3e0);
+}
+
+/* Error message */
+#errorMsg {
+  color: #e74c3c;
+  font-weight: 500;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+
+<div class="background-slogan">Air makes your tasks a breeze</div>
+
+<div class="login-container">
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
+
+  <div class="plan-cards">
+    <div class="plan-card" data-plan="free">
+      <h3>Free Plan</h3>
+      <p>₦0 / month</p>
+      <p>Basic AI assistance</p>
+      <p>Limited monitoring</p>
+      <p>Email alerts</p>
+    </div>
+    <div class="plan-card" data-plan="pro">
+      <h3>Pro Plan</h3>
+      <p>₦5,000 / month</p>
+      <p>Premium AI responses</p>
+      <p>Full analytics dashboard</p>
+      <p>Priority email & webhook alerts</p>
+    </div>
+    <div class="plan-card" data-plan="admin">
+      <h3>Admin Plan</h3>
+      <p>Custom pricing</p>
+      <p>Full dashboard control</p>
+      <p>User management</p>
+      <p>Unlimited monitoring & backup</p>
+    </div>
+  </div>
+
+  <div id="errorMsg"></div>
+  <button id="loginBtn">Login</button>
+</div>
+
+<script>
+const planCards = document.querySelectorAll(".plan-card");
+let selectedPlan = null;
+
+// Highlight plan selection
+planCards.forEach(card => {
+  card.addEventListener("click", () => {
+    planCards.forEach(c => c.classList.remove("selected"));
+    card.classList.add("selected");
+    selectedPlan = card.dataset.plan;
+  });
+});
+
+const loginBtn = document.getElementById("loginBtn");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const errorMsg = document.getElementById("errorMsg");
+
+loginBtn.addEventListener("click", async () => {
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
+
+  if (!email || !password) {
+    errorMsg.textContent = "Email and password required.";
+    return;
+  }
+  if (!selectedPlan) {
+    errorMsg.textContent = "Please select a plan.";
+    return;
+  }
+
+  try {
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      errorMsg.textContent = data.message || "Login failed";
+      return;
+    }
+
+    // Save user info locally
+    localStorage.setItem("air_token", data.token);
+    localStorage.setItem("air_username", data.username);
+    localStorage.setItem("air_plan", data.plan);
+
+    // Redirect based on actual plan from backend (safe approach)
+    switch (data.plan) {
+      case "free":
+        window.location.href = "/free-dashboard.html";
+        break;
+      case "pro":
+        window.location.href = "/pro-dashboard.html";
+        break;
+      case "admin":
+        window.location.href = "/admin-dashboard.html";
+        break;
+      default:
+        window.location.href = "/dashboard.html";
+    }
+
+  } catch (err) {
+    console.error(err);
+    errorMsg.textContent = "Server error, try again later.";
+  }
+});
+</script>
+
+
+</body>
+</html>
+
+

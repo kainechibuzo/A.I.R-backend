@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIR Dashboard</title>
+  <style>
+    body {
+      background: #0d1117;
+      color: #c9d1d9;
+      font-family: system-ui, sans-serif;
+      padding: 20px;
+    }
+    h1 { color: #58a6ff; }
+    pre {
+      background: #161b22;
+      padding: 15px;
+      border-radius: 10px;
+      overflow-x: auto;
+    }
+    button {
+      background: #238636;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover { background: #2ea043; }
+  </style>
+</head>
+<body>
+  <h1>🧠 AIR Dashboard</h1>
+  <div id="info">Loading...</div>
+  <button onclick="logout()">Logout</button>
+  <script>
+    const user = JSON.parse(localStorage.getItem('AIR_USER'));
+    if (!user) window.location.href = '/';
+
+    async function loadStatus() {
+      try {
+        const res = await fetch('/status');
+        const data = await res.json();
+        document.getElementById('info').innerHTML =
+          `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+      } catch {
+        document.getElementById('info').textContent = '⚠️ Cannot reach AIR server.';
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('AIR_USER');
+      window.location.href = '/';
+    }
+
+    loadStatus();
+  </script>
+</body>
+</html>

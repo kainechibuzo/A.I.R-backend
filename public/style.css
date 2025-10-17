@@ -1,0 +1,30 @@
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #001f3f, #0074D9);
+  color: white;
+  text-align: center;
+  padding: 3rem;
+}
+.subtitle {
+  font-size: 1rem;
+  color: #b0e0ff;
+  margin-bottom: 1.5rem;
+}
+form input, form button {
+  margin: 0.5rem;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 8px;
+  width: 250px;
+  font-size: 1rem;
+}
+form button {
+  background-color: #00FFAA;
+  color: black;
+  cursor: pointer;
+  transition: 0.3s;
+}
+form button:hover {
+  background-color: #00cc88;
+}

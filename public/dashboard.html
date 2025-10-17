@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌬️ AIR Dashboard</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+/* Reset & base */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: "Poppins", sans-serif;
+  background-color: #f5faff;
+  color: #0c2340;
+  overflow: hidden;
+}
+
+/* Dashboard layout */
+.dashboard-container {
+  display: flex;
+  height: 100%;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 300px;
+  background-color: #e6f4ff;
+  border-right: 1px solid #c3e0ff;
+  padding: 25px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.sidebar h2 {
+  font-size: 1.6rem;
+  color: #007bbd;
+  margin-bottom: 15px;
+}
+.sidebar .metric {
+  background-color: #ffffff;
+  padding: 12px 15px;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s;
+}
+.sidebar .metric:hover {
+  transform: translateX(5px);
+}
+
+/* Main content */
+.main-content {
+  flex: 1;
+  padding: 25px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  overflow-y: auto;
+}
+
+/* Logs */
+.log-entry {
+  background-color: #ffffff;
+  padding: 12px 18px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  font-size: 0.95rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.log-entry.info { border-left: 5px solid #00c0ff; }
+.log-entry.warning { border-left: 5px solid #ffc107; }
+.log-entry.critical { border-left: 5px solid #e74c3c; }
+
+/* AI Chat */
+.ai-chat {
+  background-color: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.ai-chat input[type="text"] {
+  padding: 12px 18px;
+  border-radius: 50px;
+  border: 1px solid #c3e0ff;
+  width: 100%;
+  font-size: 0.95rem;
+  outline: none;
+  transition: 0.3s;
+}
+.ai-chat input[type="text"]:focus {
+  border-color: #007bbd;
+  box-shadow: 0 0 8px rgba(0,123,189,0.2);
+}
+.ai-chat button {
+  align-self: flex-end;
+  background: linear-gradient(90deg, #00c0ff, #007bbd);
+  color: #ffffff;
+  font-weight: 600;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.ai-chat button:hover {
+  background: linear-gradient(90deg, #007bbd, #00a3e0);
+}
+
+/* Chat bubbles */
+#aiResponse {
+  background-color: #e6f4ff;
+  padding: 12px 18px;
+  border-radius: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  font-size: 0.95rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Typography & buttons */
+h1,h2,h3,h4,h5,h6 { color: #007bbd; }
+.btn, .btn-primary {
+  border-radius: 12px;
+  transition: 0.3s;
+}
+.btn-primary {
+  background: linear-gradient(90deg, #00c0ff, #007bbd);
+  border: none;
+  color: #ffffff;
+}
+.btn-primary:hover {
+  background: linear-gradient(90deg, #007bbd, #00a3e0);
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f5faff;
+}
+::-webkit-scrollbar-thumb {
+  background: #00c0ff;
+  border-radius: 4px;
+}
+</style>
+
+</head>
+<body>
+<div class="dashboard-container">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>AIR Metrics</h2>
+    <div class="metric"><span>AI Mode</span><span id="aiMode">--</span></div>
+    <div class="metric"><span>CPU Usage</span><span id="cpuUsage">--</span></div>
+    <div class="metric"><span>RAM Usage</span><span id="ramUsage">--</span></div>
+    <div class="metric"><span>Mongo Usage</span><span id="mongoUsage">--</span></div>
+    <div class="metric"><span>Last Backup</span><span id="lastBackup">--</span></div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <h2>Last 5 Logs</h2>
+    <div id="logsContainer"></div>
+
+    <h2>AIR Chat</h2>
+    <div class="ai-chat">
+      <input type="text" id="aiInput" placeholder="Ask AIR something...">
+      <button id="aiSend">Send</button>
+      <div id="aiResponse" style="white-space: pre-wrap;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const aiModeEl = document.getElementById("aiMode");
+const cpuEl = document.getElementById("cpuUsage");
+const ramEl = document.getElementById("ramUsage");
+const mongoEl = document.getElementById("mongoUsage");
+const lastBackupEl = document.getElementById("lastBackup");
+const logsContainer = document.getElementById("logsContainer");
+const aiInput = document.getElementById("aiInput");
+const aiSend = document.getElementById("aiSend");
+const aiResponse = document.getElementById("aiResponse");
+
+// Fetch metrics + logs
+async function fetchStatus() {
+  try {
+    const status = await fetch("/api/status").then(r => r.json());
+    const logs = await fetch("/api/dashboard").then(r => r.json());
+
+    aiModeEl.textContent = status.aiMode;
+    cpuEl.textContent = status.cpu + "%";
+    ramEl.textContent = status.ram + "%";
+    mongoEl.textContent = status.mongoUsage + "%";
+    lastBackupEl.textContent = status.lastBackup || "N/A";
+
+    logsContainer.innerHTML = "";
+    logs.slice(-5).reverse().forEach(log => {
+      const div = document.createElement("div");
+      div.className = "log-entry " + log.severity;
+      div.textContent = `[${log.severity.toUpperCase()}] ${log.message} (${new Date(log.timestamp).toLocaleTimeString()})`;
+      logsContainer.appendChild(div);
+    });
+  } catch (err) { console.error(err); }
+}
+
+// Send AI chat request
+aiSend.addEventListener("click", async () => {
+  const msg = aiInput.value.trim();
+  if (!msg) return;
+  aiResponse.textContent = "AIR is thinking...";
+  try {
+    const res = await fetch(`/api/ai?msg=${encodeURIComponent(msg)}`);
+    const data = await res.json();
+    aiResponse.textContent = data.response;
+  } catch (err) {
+    aiResponse.textContent = "Error contacting AIR.";
+  }
+  aiInput.value = "";
+});
+
+// Refresh metrics every 10 seconds
+fetchStatus();
+setInterval(fetchStatus, 10000);
+</script>
+</body>
+</html>

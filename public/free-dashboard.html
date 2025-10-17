@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIR Free Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(135deg, #f5faff, #e6f4ff);
+  color: #0c2340;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+header {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+header h1 {
+  font-weight: 600;
+  font-size: 2rem;
+}
+
+button.logout {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 50px;
+  background: #007bbd;
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.3s;
+}
+button.logout:hover {
+  background: #005f8d;
+}
+
+main {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.card h2 {
+  margin-top: 0;
+  color: #007bbd;
+}
+
+.card p {
+  margin: 5px 0;
+  font-size: 0.95rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  header h1 {
+    font-size: 1.5rem;
+  }
+  .card {
+    padding: 15px;
+  }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Welcome, <span id="username">User</span> (Free Plan)</h1>
+  <button class="logout" onclick="logout()">Logout</button>
+</header>
+
+<main>
+  <div class="card">
+    <h2>Basic AI Assistance</h2>
+    <p>Your Free plan includes limited AI assistance and monitoring.</p>
+    <p>Upgrade to Pro for full AI responses and analytics.</p>
+  </div>
+
+  <div class="card">
+    <h2>Monitoring</h2>
+    <p>View limited monitoring logs and receive email alerts.</p>
+  </div>
+
+  <div class="card">
+    <h2>Tips</h2>
+    <p>Free users get basic dashboard features. Explore and see if Pro features are needed!</p>
+  </div>
+</main>
+
+<script>
+// Load user info
+const username = localStorage.getItem("air_username");
+const plan = localStorage.getItem("air_plan");
+
+if (!username || plan !== "free") {
+  // Redirect if not logged in or wrong plan
+  window.location.href = "/";
+} else {
+  document.getElementById("username").textContent = username;
+}
+
+function logout() {
+  localStorage.removeItem("air_token");
+  localStorage.removeItem("air_username");
+  localStorage.removeItem("air_plan");
+  window.location.href = "/";
+}
+</script>
+
+</body>
+</html>
