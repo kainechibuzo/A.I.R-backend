@@ -1,0 +1,180 @@
+[
+  {
+    "timestamp": "2025-10-15T17:00:05.293Z",
+    "severity": "critical",
+    "message": "Red zone detected (86%). Switching to fallback DB...",
+    "metrics": {
+      "cpuUsage": 21,
+      "ramUsage": 90,
+      "mongoUsage": 31
+    },
+    "mongo": "unhealthy",
+    "fallback": "healthy",
+    "aiMode": "mock"
+  },
+  {
+    "timestamp": "2025-10-15T17:05:00.130Z",
+    "severity": "warning",
+    "message": "RAM usage high",
+    "metrics": {
+      "cpuUsage": 70,
+      "ramUsage": 88,
+      "mongoUsage": 96
+    },
+    "mongo": "unhealthy",
+    "fallback": "healthy",
+    "aiMode": "mock"
+  },
+  {
+    "timestamp": "2025-10-15T17:30:00.269Z",
+    "severity": "critical",
+    "message": "Red zone detected (81%). Switching to fallback DB...",
+    "metrics": {
+      "cpuUsage": 0,
+      "ramUsage": 83,
+      "mongoUsage": 77
+    },
+    "mongo": "unhealthy",
+    "fallback": "healthy",
+    "aiMode": "mock"
+  },
+  {
+    "timestamp": "2025-10-15T19:30:00.463Z",
+    "severity": "warning",
+    "message": "CPU usage high",
+    "metrics": {
+      "cpuUsage": 46,
+      "ramUsage": 90,
+      "mongoUsage": 66
+    },
+    "mongo": "unhealthy",
+    "fallback": "healthy",
+    "aiMode": "mock"
+  },
+  {
+    "timestamp": "2025-10-15T19:30:00.532Z",
+    "severity": "warning",
+    "message": "RAM usage high",
+    "metrics": {
+      "cpuUsage": 72,
+      "ramUsage": 90,
+      "mongoUsage": 98
+    },
+    "mongo": "unhealthy",
+    "fallback": "healthy",
+    "aiMode": "mock"
+  },
+  {
+    "timestamp": "2025-10-15T19:35:00.152Z",
+    "severity": "warning",
+    "message": "RAM usage high",
+    "metrics": {
+      "cpuUsage": 81,
+      "ramUsage": 87,
+      "mongoUsage": 12
+    },
+    "mongo": "unhealthy",
+    "fallback": "healthy",
+    "aiMode": "mock"
+  },
+  {
+    "timestamp": "2025-10-16T01:25:01.065Z",
+    "severity": "warning",
+    "message": "RAM usage high",
+    "metrics": {
+      "cpuUsage": 46,
+      "ramUsage": 86,
+      "mongoUsage": 39
+    },
+    "mongo": "unhealthy",
+    "fallback": "healthy",
+    "aiMode": "mock"
+  },
+  {
+    "timestamp": "2025-10-16T01:55:00.183Z",
+    "severity": "critical",
+    "message": "MongoDB in red zone",
+    "metrics": {
+      "cpuUsage": 97,
+      "ramUsage": 80,
+      "mongoUsage": 44
+    },
+    "mongo": "unhealthy",
+    "fallback": "healthy",
+    "aiMode": "mock"
+  },
+  {
+    "timestamp": "2025-10-16T01:55:00.989Z",
+    "severity": "warning",
+    "message": "CPU usage high",
+    "metrics": {
+      "cpuUsage": 37,
+      "ramUsage": 81,
+      "mongoUsage": 5
+    },
+    "mongo": "unhealthy",
+    "fallback": "healthy",
+    "aiMode": "mock"
+  },
+  {
+    "timestamp": "2025-10-16T02:25:00.392Z",
+    "severity": "warning",
+    "message": "RAM usage high",
+    "metrics": {
+      "cpuUsage": 70,
+      "ramUsage": 90,
+      "mongoUsage": 81
+    },
+    "mongo": "unhealthy",
+    "fallback": "healthy",
+    "aiMode": "mock"
+  },
+  {
+    "timestamp": "2025-10-16T13:35:00.087Z",
+    "severity": "critical",
+    "message": "Mongo red zone",
+    "metrics": {
+      "cpuUsage": 64,
+      "ramUsage": 78,
+      "mongoUsage": 94
+    },
+    "mongo": "unhealthy",
+    "aiMode": "mock"
+  },
+  {
+    "timestamp": "2025-10-16T16:20:00.249Z",
+    "severity": "critical",
+    "message": "Mongo red zone",
+    "metrics": {
+      "cpuUsage": 80,
+      "ramUsage": 87,
+      "mongoUsage": 37
+    },
+    "mongo": "unhealthy",
+    "aiMode": "mock"
+  },
+  {
+    "timestamp": "2025-10-16T16:25:00.191Z",
+    "severity": "critical",
+    "message": "Mongo red zone",
+    "metrics": {
+      "cpuUsage": 76,
+      "ramUsage": 82,
+      "mongoUsage": 40
+    },
+    "mongo": "unhealthy",
+    "aiMode": "mock"
+  },
+  {
+    "timestamp": "2025-10-16T20:50:00.331Z",
+    "severity": "critical",
+    "message": "MongoDB at 92%. Switched to fallback.",
+    "metrics": {
+      "cpuUsage": 14,
+      "ramUsage": 82,
+      "mongoUsage": 13
+    },
+    "mongo": "unhealthy",
+    "aiMode": "mock"
+  }
+]
