@@ -1,5 +1,5 @@
 /**
- * 🌬️ AIR Hybrid Monitoring Server v3.2 (Free + Pro + Local Business Ready)
+ * 🌬️ AIR Hybrid Monitoring Server v3.3 (Free + Pro + Local Business Ready)
  * Author: The Real Soske (Kaine Sama)
  */
 
@@ -32,8 +32,8 @@ if (!fs.existsSync(BACKUP_FOLDER)) fs.mkdirSync(BACKUP_FOLDER);
 
 const SQLITE_FILE = path.join(process.cwd(), "fallback.sqlite");
 const USERS_FILE = path.join(process.cwd(), "users.json");
-const DASHBOARD_FILE = path.join(process.cwd(), "dashboard.json"); // logs
-const SITES_FILE = path.join(process.cwd(), "sites.json"); // free/local site fallback
+const DASHBOARD_FILE = path.join(process.cwd(), "dashboard.json");
+const SITES_FILE = path.join(process.cwd(), "sites.json");
 
 if (!fs.existsSync(USERS_FILE)) fs.writeFileSync(USERS_FILE, "[]");
 if (!fs.existsSync(DASHBOARD_FILE)) fs.writeFileSync(DASHBOARD_FILE, "[]");
@@ -189,8 +189,6 @@ function authMiddleware(req, res, next) {
 
 // === API ROUTES ===
 const api = express.Router();
-
-// Force JSON header middleware
 api.use((req, res, next) => { res.setHeader("Content-Type", "application/json"); next(); });
 
 // Register/Login
@@ -225,9 +223,43 @@ api.post("/backup", authMiddleware, (req, res) => { const { collections } = req.
 api.post("/restore", authMiddleware, (req, res) => { const { filename } = req.body; res.json({ success: restoreBackup(filename) }); });
 api.post("/switch", authMiddleware, (req, res) => res.json({ message: checkAndSwitchDB() }));
 
-// AI Free/Pro
-api.get("/ai", async (req, res) => { const reply = await aiRespond(req.query.msg || "Hello AIR"); res.json({ mode: AI_MODE, response: reply }); });
-api.post("/ai-pro", authMiddleware, async (req, res) => {
+// === AI FREE/PRO WITH OPENAI + WEB LLAMA FALLBACK ===
+const openai = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
+
+async function aiRespond(msg) {
+  // Try OpenAI
+  if (openai) {
+    try {
+      const comp = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [{ role: "system", content: "You are AIR, an AI monitor." }, { role: "user", content: msg }]
+      });
+      AI_MODE = "openai";
+      return comp.choices[0].message.content;
+    } catch { console.log("⚠️ OpenAI failed, falling back to Web Llama"); }
+  }
+  // Try Web Llama
+  try {
+    const res = await axios.post("https://api.web-llama.ai/generate", { prompt: msg, max_tokens: 200 }, {
+      headers: { Authorization: `Bearer ${process.env.WEB_LLAMA_API_KEY || ""}` }
+    });
+    AI_MODE = "web-llama";
+    return res.data.output || `AI fallback: "${msg}"`;
+  } catch { console.log("⚠️ Web Llama failed, using mock AI"); }
+
+  // Mock fallback
+  AI_MODE = "mock";
+  return `AI fallback: "${msg}"`;
+}
+
+// Free AI endpoint
+api.get("/ai/free", async (req, res) => {
+  const reply = await aiRespond(req.query.msg || "Hello AIR");
+  res.json({ mode: AI_MODE, response: reply });
+});
+
+// Pro AI endpoint
+api.post("/ai/pro", authMiddleware, async (req, res) => {
   const { msg } = req.body;
   if (!req.user) return res.status(401).json({ message: "Unauthorized" });
   if (req.user.plan !== "pro") return res.status(403).json({ message: "Upgrade to Pro for premium AI" });
@@ -268,25 +300,6 @@ api.post("/sites/update", authMiddleware, async (req, res) => {
   res.json({ message: "Metrics updated" });
 });
 
-// === AI ===
-const openai = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
-async function detectAIMode() {
-  if (openai) { AI_MODE = "openai"; console.log("🧠 OpenAI mode enabled"); }
-  else { AI_MODE = "mock"; console.log("⚙️ Mock AI mode"); }
-}
-async function aiRespond(msg) {
-  if (AI_MODE === "openai") {
-    try {
-      const comp = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [{ role: "system", content: "You are AIR, an AI monitor." }, { role: "user", content: msg }]
-      });
-      return comp.choices[0].message.content;
-    } catch { AI_MODE = "mock"; }
-  }
-  return `AI fallback: "${msg}"`;
-}
-
 // === DB SWITCHER ===
 function checkAndSwitchDB() {
   const usage = getMongoUsagePercent();
@@ -316,6 +329,5 @@ cron.schedule("*/5 * * * *", () => {
 });
 
 // === START ===
-await detectAIMode();
 app.use("/api", api);
-app.listen(PORT, () => console.log(`🚀 AIR Hybrid Server v3.2 running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 AIR Hybrid Server v3.3 running on port ${PORT}`));
