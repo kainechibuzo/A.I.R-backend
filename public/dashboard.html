@@ -4,158 +4,312 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🌬️ AIR Dashboard</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
 <style>
 /* Reset & base */
-body, html {
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+}
+
+body, html {
   height: 100%;
-  font-family: "Poppins", sans-serif;
-  background-color: #f5faff;
-  color: #0c2340;
+  font-family: "Inter", sans-serif;
+  background: linear-gradient(135deg, #1e40af, #60a5fa);
+  color: #1f2937;
   overflow: hidden;
+  transition: background 0.3s ease;
+}
+
+body.dark-mode {
+  background: linear-gradient(135deg, #1f2937, #4b5563);
+  color: #e5e7eb;
 }
 
 /* Dashboard layout */
 .dashboard-container {
   display: flex;
-  height: 100%;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 20px;
+  margin: 20px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8px);
 }
 
 /* Sidebar */
 .sidebar {
-  width: 300px;
-  background-color: #e6f4ff;
-  border-right: 1px solid #c3e0ff;
-  padding: 25px 20px;
+  width: 280px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  border-right: 1px solid #d1d5db;
+  background: #ffffff;
+  border-radius: 20px 0 0 20px;
+}
+.dark-mode .sidebar {
+  background: #1f2937;
+  border-right-color: #4b5563;
 }
 .sidebar h2 {
-  font-size: 1.6rem;
-  color: #007bbd;
-  margin-bottom: 15px;
+  font-size: 1.5rem;
+  color: #1e40af;
+  font-weight: 600;
+}
+.dark-mode .sidebar h2 {
+  color: #60a5fa;
 }
 .sidebar .metric {
-  background-color: #ffffff;
-  padding: 12px 15px;
-  border-radius: 12px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+  background: #f3f4f6;
+  padding: 12px 16px;
+  border-radius: 10px;
   font-weight: 500;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: transform 0.2s;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+.dark-mode .sidebar .metric {
+  background: #374151;
+  color: #e5e7eb;
 }
 .sidebar .metric:hover {
   transform: translateX(5px);
+  background: #e5e7eb;
+}
+.dark-mode .sidebar .metric:hover {
+  background: #4b5563;
 }
 
 /* Main content */
 .main-content {
   flex: 1;
-  padding: 25px 30px;
+  padding: 24px;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 25px;
-  overflow-y: auto;
+  gap: 24px;
 }
 
-/* Logs */
-.log-entry {
-  background-color: #ffffff;
-  padding: 12px 18px;
-  border-radius: 12px;
-  margin-bottom: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  font-size: 0.95rem;
+/* Header */
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.log-entry.info { border-left: 5px solid #00c0ff; }
-.log-entry.warning { border-left: 5px solid #ffc107; }
-.log-entry.critical { border-left: 5px solid #e74c3c; }
+.header h1 {
+  font-size: 1.8rem;
+  color: #1e40af;
+  font-weight: 600;
+}
+.dark-mode .header h1 {
+  color: #60a5fa;
+}
+.header .controls {
+  display: flex;
+  gap: 12px;
+}
+.header button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+#themeToggle {
+  background: #3b82f6;
+  color: #ffffff;
+}
+#themeToggle:hover {
+  background: #2563eb;
+}
+#logoutBtn {
+  background: #ef4444;
+  color: #ffffff;
+}
+#logoutBtn:hover {
+  background: #dc2626;
+}
+.notification-bell {
+  position: relative;
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #1e40af;
+}
+.dark-mode .notification-bell {
+  color: #60a5fa;
+}
+.notification-bell .badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #ef4444;
+  color: #ffffff;
+  border-radius: 50%;
+  padding: 4px 8px;
+  font-size: 0.7rem;
+}
+
+/* Chart */
+.chart-container {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+.dark-mode .chart-container {
+  background: #1f2937;
+}
+
+/* Logs */
+.logs-section h2 {
+  font-size: 1.4rem;
+  color: #1e40af;
+  margin-bottom: 12px;
+}
+.dark-mode .logs-section h2 {
+  color: #60a5fa;
+}
+.log-entry {
+  background: #f3f4f6;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+.dark-mode .log-entry {
+  background: #374151;
+  color: #e5e7eb;
+}
+.log-entry.info { border-left: 4px solid #3b82f6; }
+.log-entry.warning { border-left: 4px solid #f59e0b; }
+.log-entry.critical { border-left: 4px solid #ef4444; }
+.log-entry:hover {
+  transform: translateX(3px);
+}
 
 /* AI Chat */
 .ai-chat {
-  background-color: #ffffff;
-  border-radius: 18px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 16px;
+}
+.dark-mode .ai-chat {
+  background: #1f2937;
 }
 .ai-chat input[type="text"] {
-  padding: 12px 18px;
+  padding: 12px 20px;
   border-radius: 50px;
-  border: 1px solid #c3e0ff;
-  width: 100%;
+  border: 1px solid #d1d5db;
+  background: #f3f4f6;
   font-size: 0.95rem;
   outline: none;
-  transition: 0.3s;
+  transition: all 0.3s ease;
+}
+.dark-mode .ai-chat input[type="text"] {
+  background: #374151;
+  border-color: #4b5563;
+  color: #e5e7eb;
+}
+.ai-chat input[type="text"]::placeholder {
+  color: #6b7280;
 }
 .ai-chat input[type="text"]:focus {
-  border-color: #007bbd;
-  box-shadow: 0 0 8px rgba(0,123,189,0.2);
+  border-color: #3b82f6;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.25);
+  background: #ffffff;
+}
+.dark-mode .ai-chat input[type="text"]:focus {
+  background: #4b5563;
 }
 .ai-chat button {
   align-self: flex-end;
-  background: linear-gradient(90deg, #00c0ff, #007bbd);
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
   color: #ffffff;
   font-weight: 600;
-  padding: 10px 22px;
+  padding: 10px 20px;
   border: none;
   border-radius: 50px;
   cursor: pointer;
-  transition: 0.3s;
+  transition: all 0.3s ease;
 }
 .ai-chat button:hover {
-  background: linear-gradient(90deg, #007bbd, #00a3e0);
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
 }
-
-/* Chat bubbles */
 #aiResponse {
-  background-color: #e6f4ff;
-  padding: 12px 18px;
-  border-radius: 15px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  font-size: 0.95rem;
-  max-height: 200px;
+  background: #f3f4f6;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  max-height: 250px;
   overflow-y: auto;
 }
-
-/* Typography & buttons */
-h1,h2,h3,h4,h5,h6 { color: #007bbd; }
-.btn, .btn-primary {
-  border-radius: 12px;
-  transition: 0.3s;
-}
-.btn-primary {
-  background: linear-gradient(90deg, #00c0ff, #007bbd);
-  border: none;
-  color: #ffffff;
-}
-.btn-primary:hover {
-  background: linear-gradient(90deg, #007bbd, #00a3e0);
+.dark-mode #aiResponse {
+  background: #374151;
+  color: #e5e7eb;
 }
 
 /* Scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #f5faff;
+  background: #f3f4f6;
+}
+.dark-mode ::-webkit-scrollbar-track {
+  background: #1f2937;
 }
 ::-webkit-scrollbar-thumb {
-  background: #00c0ff;
-  border-radius: 4px;
+  background: #3b82f6;
+  border-radius: 3px;
+}
+.dark-mode ::-webkit-scrollbar-thumb {
+  background: #60a5fa;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .dashboard-container {
+    flex-direction: column;
+    margin: 10px;
+  }
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #d1d5db;
+    border-radius: 20px 20px 0 0;
+  }
+  .dark-mode .sidebar {
+    border-bottom-color: #4b5563;
+  }
+}
+@media (max-width: 768px) {
+  .dashboard-container {
+    margin: 8px;
+  }
+  .sidebar, .main-content {
+    padding: 16px;
+  }
+  .header h1 {
+    font-size: 1.5rem;
+  }
 }
 </style>
-
 </head>
 <body>
 <div class="dashboard-container">
@@ -171,11 +325,28 @@ h1,h2,h3,h4,h5,h6 { color: #007bbd; }
 
   <!-- Main Content -->
   <div class="main-content">
-    <h2>Last 5 Logs</h2>
-    <div id="logsContainer"></div>
+    <div class="header">
+      <h1>AIR Dashboard</h1>
+      <div class="controls">
+        <button class="notification-bell" id="notificationBell">
+          🔔 <span class="badge" id="notificationCount" style="display: none;">0</span>
+        </button>
+        <button id="themeToggle">Dark Mode</button>
+        <button id="logoutBtn">Logout</button>
+      </div>
+    </div>
 
-    <h2>AIR Chat</h2>
+    <div class="chart-container">
+      <canvas id="usageChart"></canvas>
+    </div>
+
+    <div class="logs-section">
+      <h2>Last 5 Logs</h2>
+      <div id="logsContainer"></div>
+    </div>
+
     <div class="ai-chat">
+      <h2>AIR Chat</h2>
       <input type="text" id="aiInput" placeholder="Ask AIR something...">
       <button id="aiSend">Send</button>
       <div id="aiResponse" style="white-space: pre-wrap;"></div>
@@ -193,6 +364,47 @@ const logsContainer = document.getElementById("logsContainer");
 const aiInput = document.getElementById("aiInput");
 const aiSend = document.getElementById("aiSend");
 const aiResponse = document.getElementById("aiResponse");
+const themeToggle = document.getElementById("themeToggle");
+const logoutBtn = document.getElementById("logoutBtn");
+const notificationBell = document.getElementById("notificationBell");
+const notificationCount = document.getElementById("notificationCount");
+
+// Chart setup
+const ctx = document.getElementById("usageChart").getContext("2d");
+const usageChart = new Chart(ctx, {
+  type: "line",
+  data: {
+    labels: [],
+    datasets: [
+      {
+        label: "CPU Usage (%)",
+        data: [],
+        borderColor: "#3b82f6",
+        backgroundColor: "rgba(59, 130, 246, 0.2)",
+        fill: true,
+      },
+      {
+        label: "RAM Usage (%)",
+        data: [],
+        borderColor: "#f59e0b",
+        backgroundColor: "rgba(245, 158, 11, 0.2)",
+        fill: true,
+      },
+    ],
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: { beginAtZero: true, max: 100 },
+      x: { display: false },
+    },
+  },
+});
+
+// Store usage history
+const usageHistory = { cpu: [], ram: [] };
+const maxDataPoints = 10;
 
 // Fetch metrics + logs
 async function fetchStatus() {
@@ -206,7 +418,23 @@ async function fetchStatus() {
     mongoEl.textContent = status.mongoUsage + "%";
     lastBackupEl.textContent = status.lastBackup || "N/A";
 
+    // Update chart
+    usageHistory.cpu.push(status.cpu);
+    usageHistory.ram.push(status.ram);
+    if (usageHistory.cpu.length > maxDataPoints) {
+      usageHistory.cpu.shift();
+      usageHistory.ram.shift();
+    }
+    usageChart.data.labels = Array(usageHistory.cpu.length).fill("");
+    usageChart.data.datasets[0].data = usageHistory.cpu;
+    usageChart.data.datasets[1].data = usageHistory.ram;
+    usageChart.update();
+
+    // Update logs and notifications
     logsContainer.innerHTML = "";
+    const criticalLogs = logs.filter(log => log.severity === "critical").length;
+    notificationCount.textContent = criticalLogs;
+    notificationCount.style.display = criticalLogs > 0 ? "inline" : "none";
     logs.slice(-5).reverse().forEach(log => {
       const div = document.createElement("div");
       div.className = "log-entry " + log.severity;
@@ -229,6 +457,20 @@ aiSend.addEventListener("click", async () => {
     aiResponse.textContent = "Error contacting AIR.";
   }
   aiInput.value = "";
+});
+
+// Theme toggle
+themeToggle.addEventListener("click", () => {
+  document.body.classList.toggle("dark-mode");
+  themeToggle.textContent = document.body.classList.contains("dark-mode") ? "Light Mode" : "Dark Mode";
+});
+
+// Logout
+logoutBtn.addEventListener("click", () => {
+  localStorage.removeItem("air_token");
+  localStorage.removeItem("air_username");
+  localStorage.removeItem("air_plan");
+  window.location.href = "/login.html";
 });
 
 // Refresh metrics every 10 seconds
