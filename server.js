@@ -1,4 +1,4 @@
-will this work for air or is it not pro level /**
+ /**
  * 🌬️ AIR Hybrid Monitoring Server v3.3 (Free + Pro + Local Business Ready)
  * Author: The Real Soske (Kaine Sama)
  */
